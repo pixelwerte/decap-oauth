@@ -25,7 +25,7 @@ ARG SBOM_SPACES_SECRET
 COPY --from=sbom /sbom.cdx.json /sbom.cdx.json
 RUN if [ -n "$SBOM_SPACES_BUCKET" ]; then \
       AWS_ACCESS_KEY_ID="$SBOM_SPACES_KEY" AWS_SECRET_ACCESS_KEY="$SBOM_SPACES_SECRET" AWS_DEFAULT_REGION=us-east-1 \
-      aws s3 cp /sbom.cdx.json "s3://$SBOM_SPACES_BUCKET/decap-oauth/Dockerfile/$(date -u +%Y%m%dT%H%M%SZ).cdx.json" --endpoint-url "$SBOM_SPACES_ENDPOINT"; \
+      aws s3 cp /sbom.cdx.json "s3://$SBOM_SPACES_BUCKET/sbom/decap-oauth/Dockerfile/$(date -u +%Y%m%dT%H%M%SZ).cdx.json" --endpoint-url "$SBOM_SPACES_ENDPOINT"; \
     fi && touch /tmp/sbom.done
 
 FROM scratch
