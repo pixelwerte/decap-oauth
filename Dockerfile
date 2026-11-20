@@ -1,4 +1,4 @@
-FROM rust:1.79.0 AS builder
+FROM rust:1.100.0-bookworm AS builder
 WORKDIR /app
 RUN apt-get update
 RUN apt-get install -y musl-tools
@@ -15,9 +15,9 @@ RUN cargo install --locked --target x86_64-unknown-linux-musl --path .
 FROM builder AS sbom
 USER root
 COPY --from=anchore/syft@sha256:e97e20b6e6d1699c60296b66ab337941724f9bd06ac279d893eda89601fc4b2a /syft /usr/local/bin/syft
-RUN SYFT_CHECK_FOR_APP_UPDATE=false syft dir:/app/decap_auth -o cyclonedx-json=/sbom.cdx.json
+RUN SYFT_CHECK_FOR_APP_UPDATE=false syft dir:/app/decap_auth --exclude './kaniko' --exclude './.app_platform' --exclude './.app_platform_workspace' -o cyclonedx-json=/sbom.cdx.json
 
-FROM amazon/aws-cli@sha256:c5d442efed03350a3c3d7a42b23f42a8e7b76acf5dbb4b021f2641bcd36680ea AS sbom-upload
+FROM amazon/aws-cli:2.41.2@sha256:7a77ccb39e3272191adbf905c50db8c127db88fd79454911a41a6b1c0e419e9b AS sbom-upload
 ARG SBOM_SPACES_BUCKET
 ARG SBOM_SPACES_ENDPOINT
 ARG SBOM_SPACES_KEY
